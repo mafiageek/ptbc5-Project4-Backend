@@ -11,7 +11,7 @@ const messageSchema = new mongoose.Schema(
       type: ObjectId,
       ref: "user",
     },
-    conetent: {
+    content: {
       type: String,
       trim: true,
       required: true,
