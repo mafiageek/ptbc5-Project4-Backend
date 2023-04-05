@@ -2,44 +2,58 @@ import fs from "fs";
 import slugify from "slugify";
 import Listing from "../models/listing.js";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
 
 export const create = async (req, res) => {
+  // console.log(req.fields);
+  // console.log(req.files);
+
+  // Configure Multer to handle file uploads
+  cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET,
+  });
+
+  const upload = multer({ storage: multer.memoryStorage() });
+
+  const { title, price, category, location } = req.fields;
+  const { photo } = req.files;
+
+  const decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+  req.user = decoded;
+  console.log(req.user._id);
+
+  // validation
+  switch (true) {
+    case !title.trim():
+      return res.json({ error: "title is required" });
+    case !price.trim():
+      return res.json({ error: "Price is required" });
+    case !category.trim():
+      return res.json({ error: "Category is required" });
+    case photo:
+      return res.json({ error: "Photo is required" });
+  }
+
   try {
-    // console.log(req.fields);
-    // console.log(req.files);
+    // Use the Cloudinary SDK to upload the image
+    const result = await cloudinary.uploader.upload(photo.path, {
+      folder: "samples",
+    });
 
-    const { title, price, category, location } = req.fields;
-    const { photo } = req.files;
-
-    const decoded = jwt.verify(
-      req.headers.authorization,
-      process.env.JWT_SECRET
-    );
-    req.user = decoded;
-    console.log(req.user._id);
-
-    // validation
-    switch (true) {
-      case !title.trim():
-        return res.json({ error: "title is required" });
-      case !price.trim():
-        return res.json({ error: "Price is required" });
-      case !category.trim():
-        return res.json({ error: "Category is required" });
-    }
-
-    const listing = new Listing({ ...req.fields, userid: req.user._id });
-
-    if (photo) {
-      listing.photo.data = fs.readFileSync(photo.path);
-      listing.photo.contentType = photo.type;
-    }
+    // Create a new listing in your database and include the uploaded image URL
+    const listing = new Listing({
+      ...req.fields,
+      userid: req.user._id,
+      photo: result.secure_url,
+    });
 
     await listing.save();
     res.json(listing);
   } catch (err) {
-    console.log(err);
-    return res.status(400).json(err.message);
+    console.error(err);
   }
 };
 
@@ -47,8 +61,6 @@ export const list = async (req, res) => {
   try {
     const listings = await Listing.find({})
       .populate("category")
-      .select("-photo")
-      .limit(12)
       .sort({ createdAt: -1 });
 
     res.json(listings);
@@ -59,9 +71,7 @@ export const list = async (req, res) => {
 
 export const read = async (req, res) => {
   try {
-    const listing = await Listing.findById(req.params.id)
-      .select("-photo")
-      .populate("category");
+    const listing = await Listing.findById(req.params.id).populate("category");
 
     res.json(listing);
   } catch (err) {
@@ -79,40 +89,42 @@ export const remove = async (req, res) => {
 };
 
 export const update = async (req, res) => {
+  // console.log(req.fields);
+  // console.log(req.files);
+
+  const { title, price, category, location } = req.fields;
+  const { photo } = req.files;
+
+  // validation
+  switch (true) {
+    case !title.trim():
+      return res.json({ error: "title is required" });
+    case !price.trim():
+      return res.json({ error: "Price is required" });
+    case !category.trim():
+      return res.json({ error: "Category is required" });
+  }
+
   try {
-    // console.log(req.fields);
-    // console.log(req.files);
-
-    const { title, price, category, location } = req.fields;
-    const { photo } = req.files;
-
-    // validation
-    switch (true) {
-      case !title.trim():
-        return res.json({ error: "title is required" });
-      case !price.trim():
-        return res.json({ error: "Price is required" });
-      case !category.trim():
-        return res.json({ error: "Category is required" });
+    // Use the Cloudinary SDK to upload the image
+    if (photo) {
+      const result = await cloudinary.uploader.upload(photo.path, {
+        folder: "samples",
+      });
     }
-
     const listing = await Listing.findByIdAndUpdate(
       req.params.id,
       {
         ...req.fields,
+        photo: result.secure_url,
       },
       { new: true }
     );
 
-    if (photo) {
-      listing.photo.data = fs.readFileSync(photo.path);
-      listing.photo.contentType = photo.type;
-    }
-
     await listing.save();
     res.json(listing);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(400).json(err.message);
   }
 };

@@ -16,7 +16,11 @@ mongoose
   .then(() => console.log("DB Connected"))
   .catch((err) => console.log("DB ERROR => ", err));
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json());
 

@@ -35,8 +35,9 @@ const listingSchema = new mongoose.Schema(
       },
     },
     photo: {
-      data: Buffer,
-      contentType: String,
+      type: String,
+      trim: true,
+      maxlength: 160,
     },
   },
   { timestamps: true }
