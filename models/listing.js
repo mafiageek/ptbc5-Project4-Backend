@@ -7,11 +7,17 @@ const listingSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: true,
-      maxlength: 160,
+      maxlength: 100,
     },
     slug: {
       type: String,
       lowercase: true,
+    },
+    description: {
+      type: String,
+      trim: true,
+      required: true,
+      maxlength: 200,
     },
     userid: {
       type: ObjectId,
@@ -37,7 +43,6 @@ const listingSchema = new mongoose.Schema(
     photo: {
       type: String,
       trim: true,
-      maxlength: 160,
     },
   },
   { timestamps: true }

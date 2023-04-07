@@ -4,10 +4,11 @@ import Listing from "../models/listing.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
+import { converBase64ToImage } from "convert-base64-to-image";
 
 export const create = async (req, res) => {
-  // console.log(req.fields);
-  // console.log(req.files);
+  console.log(req.fields);
+  console.log(req.files);
 
   // Configure Multer to handle file uploads
   cloudinary.config({
@@ -21,9 +22,14 @@ export const create = async (req, res) => {
   const { title, price, category, location } = req.fields;
   const { photo } = req.files;
 
-  const decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
-  req.user = decoded;
-  console.log(req.user._id);
+  // const imageName = `${Date.now()}.jpg`;
+  // const imagePath = `./images/${imageName}`;
+
+  // const buffer = Buffer.from(photo, "base64");
+  // fs.writeFileSync(imagePath, buffer);
+  // const decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+  // req.user = decoded;
+  // console.log(req.user._id);
 
   // validation
   switch (true) {
@@ -33,20 +39,19 @@ export const create = async (req, res) => {
       return res.json({ error: "Price is required" });
     case !category.trim():
       return res.json({ error: "Category is required" });
-    case photo:
-      return res.json({ error: "Photo is required" });
   }
 
   try {
+    console.log(req.file);
     // Use the Cloudinary SDK to upload the image
-    const result = await cloudinary.uploader.upload(photo.path, {
+    const result = await cloudinary.uploader.upload(photo, {
       folder: "samples",
     });
 
     // Create a new listing in your database and include the uploaded image URL
     const listing = new Listing({
       ...req.fields,
-      userid: req.user._id,
+      // userid: req.user._id,
       photo: result.secure_url,
     });
 
