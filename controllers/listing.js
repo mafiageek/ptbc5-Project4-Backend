@@ -19,17 +19,11 @@ export const create = async (req, res) => {
 
   const upload = multer({ storage: multer.memoryStorage() });
 
-  const { title, price, category, location } = req.fields;
-  const { photo } = req.files;
+  const { title, price, category, location, photo } = req.fields;
 
-  // const imageName = `${Date.now()}.jpg`;
-  // const imagePath = `./images/${imageName}`;
-
-  // const buffer = Buffer.from(photo, "base64");
-  // fs.writeFileSync(imagePath, buffer);
-  // const decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
-  // req.user = decoded;
-  // console.log(req.user._id);
+  const decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+  req.user = decoded;
+  console.log(req.user._id);
 
   // validation
   switch (true) {
@@ -42,7 +36,6 @@ export const create = async (req, res) => {
   }
 
   try {
-    console.log(req.file);
     // Use the Cloudinary SDK to upload the image
     const result = await cloudinary.uploader.upload(photo, {
       folder: "samples",
@@ -51,7 +44,10 @@ export const create = async (req, res) => {
     // Create a new listing in your database and include the uploaded image URL
     const listing = new Listing({
       ...req.fields,
-      // userid: req.user._id,
+      location: {
+        coordinates: location,
+      },
+      userid: req.user._id,
       photo: result.secure_url,
     });
 
