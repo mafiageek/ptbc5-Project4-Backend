@@ -19,7 +19,7 @@ export const create = async (req, res) => {
 
   const upload = multer({ storage: multer.memoryStorage() });
 
-  const { title, price, category, location, photo } = req.fields;
+  const { title, price, category, photo } = req.fields;
 
   const decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
   req.user = decoded;
@@ -44,9 +44,6 @@ export const create = async (req, res) => {
     // Create a new listing in your database and include the uploaded image URL
     const listing = new Listing({
       ...req.fields,
-      location: {
-        coordinates: location,
-      },
       userid: req.user._id,
       photo: result.secure_url,
     });

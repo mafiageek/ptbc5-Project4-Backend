@@ -31,10 +31,11 @@ const listingSchema = new mongoose.Schema(
     price: {
       type: Number,
     },
-    location: {
-      coordinates: {
-        type: [String],
-      },
+    latitude: {
+      type: Number,
+    },
+    longitude: {
+      type: Number,
     },
     photo: {
       type: String,
