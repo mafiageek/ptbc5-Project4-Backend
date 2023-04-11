@@ -2,6 +2,7 @@ import User from "../models/user.js";
 import { hashPassword, comparePassword } from "../helpers/auth.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import jwt_decode from "jwt-decode";
 
 dotenv.config();
 
@@ -36,9 +37,16 @@ export const register = async (req, res) => {
       password: hashedPassword,
     }).save();
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "365d",
-    });
+    const token = jwt.sign(
+      { _id: user._id, name: user.name, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "365d",
+      }
+    );
+
+    const decoded = jwt_decode(token);
+    console.log(decoded);
 
     res.json({
       user: {
@@ -78,7 +86,7 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "30d",
     });
 
     res.json({

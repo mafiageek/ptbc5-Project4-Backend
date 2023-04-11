@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import { converBase64ToImage } from "convert-base64-to-image";
+import jwt_decode from "jwt-decode";
 
 export const create = async (req, res) => {
   console.log(req.fields);
@@ -23,7 +24,10 @@ export const create = async (req, res) => {
 
   const decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
   req.user = decoded;
-  console.log(req.user._id);
+  // console.log(req.user._id);
+
+  const decodedInfo = jwt_decode(req.headers.authorization);
+  console.log(decodedInfo._id);
 
   // validation
   switch (true) {
