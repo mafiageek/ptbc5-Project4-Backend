@@ -90,12 +90,10 @@ export const login = async (req, res) => {
     });
 
     res.json({
-      user: {
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-      token,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: token,
     });
   } catch (error) {
     console.log(error);
