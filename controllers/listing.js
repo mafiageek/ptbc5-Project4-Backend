@@ -4,7 +4,6 @@ import Listing from "../models/listing.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
-import { converBase64ToImage } from "convert-base64-to-image";
 import jwt_decode from "jwt-decode";
 
 export const create = async (req, res) => {
@@ -60,8 +59,9 @@ export const create = async (req, res) => {
 };
 
 export const list = async (req, res) => {
+  const searchParams = req.query;
   try {
-    const listings = await Listing.find({})
+    const listings = await Listing.find({ ...searchParams })
       .populate("category")
       .sort({ createdAt: -1 });
 
@@ -80,6 +80,17 @@ export const read = async (req, res) => {
     console.log(err);
   }
 };
+
+// export const readbyuid = async (req, res) => {
+//   const uid = req.params.uid;
+//   try {
+//     const listing = await Listing.find({ userid: uid }).populate("category");
+
+//     res.json(listing);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
 
 export const remove = async (req, res) => {
   try {

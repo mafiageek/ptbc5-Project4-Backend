@@ -11,6 +11,7 @@ import { create, list, read, remove, update } from "../controllers/listing.js";
 router.post("/listing", formidable(), create);
 router.get("/listings", list);
 router.get("/listing/:id", read);
-router.delete("/listing/:id", requireSignin, remove);
+// router.get("/listing/:uid", readbyuid);
+router.delete("/listing/:id", remove);
 router.put("/listing/:id", requireSignin, formidable(), update);
 export default router;

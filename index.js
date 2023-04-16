@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import authRoutes from "./routes/auth.js";
 import categoryRoutes from "./routes/category.js";
 import listingRoutes from "./routes/listing.js";
+import messageRoutes from "./routes/message.js";
 dotenv.config();
 
 const app = express();
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use("/api", authRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", listingRoutes);
+app.use("/api", messageRoutes);
 
 app.get("/", (req, res) => {
   res.send(process.env);
