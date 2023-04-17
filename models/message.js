@@ -5,11 +5,11 @@ const messageSchema = new mongoose.Schema(
   {
     fromuserid: {
       type: ObjectId,
-      ref: "user",
+      ref: "User",
     },
     touserid: {
       type: ObjectId,
-      ref: "user",
+      ref: "User",
     },
     content: {
       type: String,

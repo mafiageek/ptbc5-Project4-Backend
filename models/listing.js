@@ -21,7 +21,7 @@ const listingSchema = new mongoose.Schema(
     },
     userid: {
       type: ObjectId,
-      ref: "user",
+      ref: "User",
     },
     category: {
       type: ObjectId,

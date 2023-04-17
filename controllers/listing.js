@@ -1,6 +1,7 @@
 import fs from "fs";
 import slugify from "slugify";
 import Listing from "../models/listing.js";
+import Category from "../models/category.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
@@ -61,6 +62,7 @@ export const create = async (req, res) => {
 export const list = async (req, res) => {
   const searchParams = req.query;
   try {
+    console.log("req params =>", req.params);
     const listings = await Listing.find({ ...searchParams })
       .populate("category")
       .sort({ createdAt: -1 });

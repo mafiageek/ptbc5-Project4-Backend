@@ -1,4 +1,5 @@
 import Message from "../models/message.js";
+import User from "../models/user.js";
 import slugify from "slugify";
 
 export const create = async (req, res) => {
@@ -18,9 +19,12 @@ export const create = async (req, res) => {
 export const list = async (req, res) => {
   const searchParams = req.query;
   try {
-    const messages = await Message.find({ ...searchParams }).sort({
-      createdAt: -1,
-    });
+    const messages = await Message.find({ ...searchParams })
+      .populate("fromuserid", "name email")
+      .populate("touserid", "name email")
+      .sort({
+        createdAt: -1,
+      });
 
     res.json(messages);
   } catch (err) {
