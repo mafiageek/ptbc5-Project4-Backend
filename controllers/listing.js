@@ -136,7 +136,6 @@ export const update = async (req, res) => {
       { new: true }
     );
 
-    await listing.save();
     res.json(listing);
   } catch (err) {
     console.error(err);

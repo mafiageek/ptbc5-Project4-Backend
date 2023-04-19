@@ -1,6 +1,7 @@
 import Message from "../models/message.js";
 import User from "../models/user.js";
 import slugify from "slugify";
+import { sendPushNotification } from "../helpers/pushNotifications.js";
 
 export const create = async (req, res) => {
   try {
@@ -9,6 +10,11 @@ export const create = async (req, res) => {
       return res.json({ error: "Message is required" });
     }
     const message = await new Message({ ...req.body }).save();
+
+    const user = await User.findById(touserid);
+
+    sendPushNotification(user.pushtoken, content);
+
     res.json(message);
   } catch (err) {
     console.log(err);

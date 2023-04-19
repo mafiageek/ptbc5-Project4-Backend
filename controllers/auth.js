@@ -45,16 +45,16 @@ export const register = async (req, res) => {
       }
     );
 
-    const decoded = jwt_decode(token);
-    console.log(decoded);
+    //don't need to decode
+    // const decoded = jwt_decode(token);
+    // console.log(decoded);
 
     res.json({
-      user: {
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-      token,
+      uid: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: token,
     });
   } catch (error) {
     console.log(error);
@@ -103,4 +103,19 @@ export const login = async (req, res) => {
 
 export const secret = async (req, res) => {
   res.json({ currentUser: req.user });
+};
+
+export const update = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+      },
+      { new: true }
+    );
+    res.json(user);
+  } catch (err) {
+    console.log(err);
+  }
 };
